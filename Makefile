@@ -19,7 +19,7 @@ all: env mypy lint test
 env: env/bin/activate
 
 env/bin/activate: requirements.txt
-	test -d env || python3.8 -m venv env
+	test -d env || virtualenv env --python=python3.8
 	. env/bin/activate; pip install --upgrade pip; pip install pip-tools wheel -e .; pip-sync requirements.txt requirements-dev.txt
 	touch env/bin/activate
 
