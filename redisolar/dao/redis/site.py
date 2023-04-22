@@ -1,4 +1,3 @@
-from pprint import pprint
 from typing import Set
 
 from redisolar.models import Site
