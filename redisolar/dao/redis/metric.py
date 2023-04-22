@@ -119,7 +119,16 @@ class MetricDaoRedis(MetricDaoBase, RedisDaoBase):
         metric_key = self.key_schema.day_metric_key(site_id, unit, time)  # pylint: disable=unused-variable
         minute_of_day = self._get_day_minute(time) # pylint: disable=unused-variable
 
+        # mapping = {
+        #     f"{value}:{minute_of_day}": f"{minute_of_day}"
+        # }
+
+        mapping = {
+            str(MeasurementMinute(measurement=value, minute_of_day=minute_of_day)):minute_of_day
+        }
         # START Challenge #2
+        pipeline.zadd(metric_key, mapping=mapping)
+        pipeline.expire(metric_key, METRIC_EXPIRATION_SECONDS)
         # END Challenge #2
 
     def get_recent(self, site_id: int, unit: MetricUnit, time: datetime.datetime,
