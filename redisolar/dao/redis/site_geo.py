@@ -90,10 +90,17 @@ class SiteGeoDaoRedis(SiteGeoDaoBase, RedisDaoBase):
         """Find all Sites."""
         site_ids = self.redis.zrange(self.key_schema.site_geo_key(), 0, -1)
         sites = set()
+        p = self.redis.pipeline(transaction=False)
 
         for site_id in site_ids:
-            key = self.key_schema.site_hash_key(site_id)
-            site_hash = self.redis.hgetall(key)
-            sites.add(FlatSiteSchema().load(site_hash))
+            p.hgetall(self.key_schema.site_hash_key(site_id))
+
+        site_hashes = p.execute()
+
+        site_hashes = [h for h in site_hashes if h is not None]
+
+        for site_hash in site_hashes:
+            site_model = FlatSiteSchema().load(site_hash)
+            sites.add(site_model)
 
         return sites
