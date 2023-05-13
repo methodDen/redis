@@ -1,6 +1,3 @@
-from pprint import pprint
-from typing import Dict
-from typing import List
 from typing import Set
 
 from redisolar.dao.base import SiteGeoDaoBase
